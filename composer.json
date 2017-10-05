@@ -1,0 +1,16 @@
+{
+    "name": "pixelstorage/client",
+    "description": "PixelStorage client",
+    "authors": [
+        {
+            "name": "Cesar Rodas",
+            "email": "crodas@php.net"
+        }
+    ],
+    "autoload": {
+        "classmap": ["src"]
+    },
+    "require": {
+        "guzzlehttp/guzzle": "~6.0"
+    }
+}
