@@ -57,6 +57,15 @@ class Image
         return $this;
     }
 
+    public function resize($width, $height=null)
+    {
+        if ($height) {
+            $this->filters[] = [__FUNCTION__, $width, $height];
+        } else {
+            $this->filters[] = [__FUNCTION__, $width];
+        }
+    }
+
     public function __toString()
     {
         $uri = [];
