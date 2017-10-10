@@ -111,6 +111,78 @@ class Image
     }
 
     /**
+     * Applies gamma correction to a given image
+     */
+    public function gamma($gamma)
+    {
+        $this->filters[] = [__FUNCTION__, $gamma];
+        return $this;
+    }
+
+    /**
+     * Turns an image into a greyscale version
+     */
+    public function greyscale()
+    {
+        $this->filters[] = [__FUNCTION__];
+        return $this;
+    }
+
+    /**
+     * Resize image proportionally to given height
+     */
+    public function heighten($height)
+    {
+        $this->filters[] = [__FUNCTION__, $height];
+        return $this;
+    }
+
+    /**
+     * Toggles interlaced encoding mode
+     */
+    public function interlace($mode)
+    {
+        $this->filters[] = [__FUNCTION__, (int)$mode];
+        return $this;
+    }
+
+    /**
+     * Inverts colors of an image
+     */
+    public function invert()
+    {
+        $this->filters[] = [__FUNCTION__];
+        return $this;
+    }
+
+    /**
+     * Defines opacity of an image
+     */
+    public function opacity($transparency)
+    {
+        $this->filters[] = [__FUNCTION__, $this->between('transparency', $transparency, 0, 100)];
+        return $this;
+    }
+
+    /**
+     * Applies a pixelation effect to a given image
+     */
+    public function pixelate($size)
+    {
+        $this->filters[] = [__FUNCTION__, $size];
+        return $this;
+    }
+
+    /**
+     * Reduces colors of a given image
+     */
+    public function limitcolors($count, $matte)
+    {
+        $this->filters[] = [__FUNCTION__, $count, $matte];
+        return $this;
+    }
+
+    /**
      * Crops the image
      */
     public function crop($width, $height, $x = 0, $y = 0)
@@ -148,6 +220,9 @@ class Image
         return $this;
     }
 
+    /**
+     * Resizes image dimensions
+     */
     public function resize($width, $height=null)
     {
         if ($height) {
@@ -155,6 +230,42 @@ class Image
         } else {
             $this->filters[] = [__FUNCTION__, $width];
         }
+        return $this;
+    }
+
+    /**
+     * Rotates image counter clockwise
+     */
+    public function rotate($angle)
+    {
+        $this->filters[] = [__FUNCTION__, $angle];
+        return $this;
+    }
+
+    /**
+     * Sharpen image
+     */
+    public function sharpen($amount)
+    {
+        $this->filters[] = [__FUNCTION__, $this->between('amount', $amount, 0, 100)];
+        return $this;
+    }
+
+    /**
+     * Trims away parts of an image
+     */
+    public function trim($base, $away, $tolerance, $feather)
+    {
+        $this->filters[] = [__FUNCTION__, $base, $away, $tolerance, $feather];
+        return $this;
+    }
+
+    /**
+     * Resize image proportionally to given width
+     */
+    public function widen($width)
+    {
+        $this->filters[] = [__FUNCTION__, $width];
         return $this;
     }
 
