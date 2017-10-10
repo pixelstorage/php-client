@@ -82,6 +82,11 @@ class Client
         ]);
     }
 
+    public function sign(array $data, $secret)
+    {
+        $data = array_map('strval', array_values(array_filter($data)));
+        return substr(hash_hmac('sha256', serialize($data), $secret), 0, 8);
+    }
 
     public function prepare(Array $json = array())
     {

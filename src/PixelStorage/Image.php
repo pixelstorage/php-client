@@ -36,6 +36,16 @@
 */
 namespace PixelStorage;
 
+use RuntimeException;
+
+/**
+ * Image class
+ *
+ * This class abstract all the operations supported by the PixelStorage server. 
+ *
+ * It exposes a fluent interface, implementing most operations (for performance reasons)
+ * but also using the magic `__call` method to be compatible in the future.
+ */
 class Image
 {
     protected $image_id;
@@ -44,6 +54,9 @@ class Image
 
     protected $filters = [];
 
+    /**
+     * 
+     */
     public function __construct($image_id, $secret, Client $client)
     {
         $this->image_id = $image_id;
@@ -51,9 +64,87 @@ class Image
         $this->client   = $client;
     }
 
+    protected function between($name, $level, $min, $max)
+    {
+        if ($level > $max || $level < $min) {
+            throw new RuntimeException("Invalid value for $name, it should be between $min and $max");
+        }
+        return $level;
+    }
+
+    /**
+     * Generic method to queue a filter with their argument.
+     *
+     * This method makes it future-compatible with newer (and customer filters)
+     *
+     * @return $this
+     */
+    public function __call($method, array $args)
+    {
+        $this->filters[] = array_merge($method, $args);
+        return $this;
+    }
+
+    /**
+     * Crops and resized an image at the same time
+     */
     public function fit($width, $height = null, $position = 'center')
     {
         $this->filters[] = [__FUNCTION__, $width, $height ?: $width, $position];
+        return $this;
+    }
+
+    public function flip($mode)
+    {
+        $mode = in_array($mode, [2, 'v', 'vert', 'vertical']) ? 'v' : 'h';
+        $this->filters[] = [__FUNCTION__, $mode];
+        return $this;
+    }
+
+    /**
+     * Applies blur effect on image
+     */
+    public function blur($amount = 1)
+    {
+        $this->filters[] = [__FUNCTION__, $this->between('amount', $amount, 0, 100)];
+        return $this;
+    }
+
+    /**
+     * Crops the image
+     */
+    public function crop($width, $height, $x = 0, $y = 0)
+    {
+        $this->filters[] = [__FUNCTION__, $width, $height, $x, $y];
+        return $this;
+    }
+
+    public function brightness($level)
+    {
+        $this->filters[] = [__FUNCTION__, $this->between('level', $level, -100, 100)];
+        return $this;
+    }
+
+    /**
+     * Changes contrast of image
+     */
+    public function contrast($level)
+    {
+        $this->filters[] = [__FUNCTION__, $this->between('level', $level, -100, 100)];
+        return $this;
+    }
+
+    /**
+     * Changes balance of different RGB color channels
+     */
+    public function colorize($red, $green, $blue)
+    {
+        $this->filters[] = [
+            __FUNCTION__,
+            $this->between('red', $red, -100, 100),
+            $this->between('green', $red, -100, 100),
+            $this->between('blue', $red, -100, 100),
+        ];
         return $this;
     }
 
@@ -64,16 +155,24 @@ class Image
         } else {
             $this->filters[] = [__FUNCTION__, $width];
         }
+        return $this;
     }
 
-    public function __toString()
+    public function url()
     {
         $uri = [];
         foreach ($this->filters as $filter) {
             $uri = array_merge($uri, (array)$filter); 
         }
-        $uri   = array_map('strval', array_values(array_filter($uri)));
-        $uri[] = substr(hash_hmac('sha256', serialize($uri), $this->secret), 0, 8);
-        return $this->client->getHost() . '/image/' . $this->image_id . '/' . implode("/", $uri);
+
+        return $this->client->getHost() . '/i/' 
+            . $this->image_id . '/' 
+            . implode("/", $uri)
+            . '/' . $this->client->sign($uri, $this->secret);
+    }
+
+    public function __toString()
+    {
+        return $this->url();
     }
 }
