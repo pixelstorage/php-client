@@ -12,5 +12,9 @@
     },
     "require": {
         "guzzlehttp/guzzle": ">=5.2"
+    },
+    "require-dev": {
+        "crodas/phpunit-compat": "^1.7",
+        "paragonie/random_compat": "^2.0"
     }
 }
