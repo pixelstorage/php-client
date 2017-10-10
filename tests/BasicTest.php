@@ -18,7 +18,10 @@ class BasicTest extends TestCase
             if (substr($method->getName(), 0, 2) === '__' || !$method->isPublic() || $method->getName() === 'url') {
                 continue;
             }
-            $params = array_fill(0, $method->getNumberOfRequiredParameters(), 1);
+            $params = [];
+            if ($method->getNumberOfRequiredParameters() > 0) {
+                $params = array_fill(0, $method->getNumberOfRequiredParameters(), 1);
+            }
             $methods[] = [$object, $method->getName(), $params];
         }
         return $methods;
