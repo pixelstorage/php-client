@@ -47,6 +47,16 @@ class PixelStorage
         self::$client = $client;
     }
 
+    public function __invokeStatic($image)
+    {
+        return self::image($image);
+    }
+
+    public static function img($image)
+    {
+        return self::image($image);
+    }
+
     public static function image($image)
     {
         if (strpos($image, ":") === -1) {
