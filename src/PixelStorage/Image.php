@@ -41,7 +41,7 @@ use RuntimeException;
 /**
  * Image class
  *
- * This class abstract all the operations supported by the PixelStorage server. 
+ * This class abstract all the operations supported by the PixelStorage server.
  *
  * It exposes a fluent interface, implementing most operations (for performance reasons)
  * but also using the magic `__call` method to be compatible in the future.
@@ -55,7 +55,7 @@ class Image
     protected $filters = [];
 
     /**
-     * 
+     *
      */
     public function __construct($image_id, $secret, Client $client)
     {
@@ -273,11 +273,11 @@ class Image
     {
         $uri = [];
         foreach ($this->filters as $filter) {
-            $uri = array_merge($uri, (array)$filter); 
+            $uri = array_merge($uri, (array)$filter);
         }
 
-        return $this->client->getHost() . '/i/' 
-            . $this->image_id . '/' 
+        return $this->client->getHost() . '/i/'
+            . $this->image_id . '/'
             . implode("/", $uri)
             . '/' . $this->client->sign($uri, $this->secret);
     }

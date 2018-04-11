@@ -38,18 +38,27 @@
 use PixelStorage\Image;
 use PixelStorage\Client;
 
+/**
+ * Pixel Storage Client
+ *
+ * The client should be configured before any usage.
+ *
+ * We expose static functions to make easier to use after configuration.
+ *
+ *
+ */
 class PixelStorage
 {
     protected static $client;
 
+    /**
+     * Configure
+     *
+     * Configures the PixelStorage object. 
+     */
     public static function configure(Client $client)
     {
         self::$client = $client;
-    }
-
-    public function __invokeStatic($image)
-    {
-        return self::image($image);
     }
 
     public static function img($image)
@@ -87,5 +96,12 @@ class PixelStorage
         }
 
         throw new RuntimeException("Invalid response from the server");
+    }
+}
+
+if (!is_callable('pixelstorage')) {
+    function pixelstorage($url)
+    {
+        return PixelStorage::image($url);
     }
 }
